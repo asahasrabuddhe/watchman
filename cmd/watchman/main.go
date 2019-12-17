@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/urfave/cli/v2"
+	"go.ajitem.com/watchman"
 	"os"
 	"os/exec"
 
@@ -66,7 +67,7 @@ func main() {
 
 					op, err := exec.Command(c.String("exec")).CombinedOutput()
 					if err != nil {
-						log.Println(err)
+						log.Fatal(err)
 					}
 
 					fmt.Println(string(op))
@@ -76,10 +77,22 @@ func main() {
 			}
 		}()
 
-		files := c.StringSlice("f")
-		dirs := c.StringSlice("d")
+		// add the list of files to paths to monitor
+		var pathsToMonitor = c.StringSlice("f")
 
-		for _, dir := range append(files, dirs...) {
+		// add the list of directories and their subdirectories to paths to monitor
+		for _, path := range c.StringSlice("d") {
+			walker := watchman.NewWalker(path)
+			dirs, err := walker.GetDirectories()
+			if err != nil {
+				return err
+			}
+
+			pathsToMonitor = append(pathsToMonitor, dirs...)
+		}
+
+		// add the paths to monitor to the watcher
+		for _, dir := range pathsToMonitor {
 			if err := watcher.Add(dir); err != nil {
 				return err
 			}
