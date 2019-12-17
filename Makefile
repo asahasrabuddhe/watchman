@@ -1,9 +1,10 @@
 VERSION := $(shell git describe)
 VERSION_WIDE := $(shell git describe)+$(shell date +'%_Y%m%_d')-$(shell git rev-parse --short=7 HEAD)
+GO_PATH := $(shell go env GOPATH)
 
 .PHONY: lint
 lint:
-	curl -sfL "https://install.goreleaser.com/github.com/golangci/golangci-lint.sh" | sh -s -- -b $(go env GOPATH)/bin latest
+	curl -sfL "https://install.goreleaser.com/github.com/golangci/golangci-lint.sh" | sh -s -- -b $(GO_PATH)/bin latest
 	golangci-lint run
 
 .PHONY: build
