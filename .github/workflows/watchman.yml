@@ -45,7 +45,7 @@ jobs:
       - name: Extract Version
         if: success() && contains(github.ref, 'v')
         id: extract_version
-        run: echo ::set-output name=VERSION::${{GITHUB_REF#refs/tags/}}
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
 
       - name: Upload Linux Asset
         if: success() && contains(github.ref, 'v')
