@@ -20,9 +20,15 @@ func (w *Walker) GetDirectories() ([]string, error) {
 }
 
 func (w *Walker) walker(path string, info os.FileInfo, err error) error {
-	info, err = os.Stat(path)
 	if err != nil {
 		return err
+	}
+
+	if info == nil {
+		info, err = os.Stat(path)
+		if err != nil {
+			return err
+		}
 	}
 
 	mode := info.Mode()
