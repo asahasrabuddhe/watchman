@@ -77,14 +77,9 @@ func main() {
 		}()
 
 		files := c.StringSlice("f")
-		for _, file := range files {
-			if err := watcher.Add(file); err != nil {
-				return err
-			}
-		}
-
 		dirs := c.StringSlice("d")
-		for _, dir := range dirs {
+
+		for _, dir := range append(files, dirs...) {
 			if err := watcher.Add(dir); err != nil {
 				return err
 			}
