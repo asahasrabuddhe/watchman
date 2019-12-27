@@ -67,25 +67,25 @@ func main() {
 					var op []byte
 					var err error
 
-					if event.Op & fsnotify.Create == fsnotify.Create {
+					if event.Op == fsnotify.Create {
 						// new file created
 						op, err = exec.Command(c.String("exec")).CombinedOutput()
 						if err != nil {
 							log.Fatal(err)
 						}
-					} else if event.Op & fsnotify.Write == fsnotify.Write {
+					} else if event.Op == fsnotify.Write {
 						// file is saved
 						op, err = exec.Command(c.String("exec")).CombinedOutput()
 						if err != nil {
 							log.Fatal(err)
 						}
-					} else if event.Op & fsnotify.Write == fsnotify.Remove {
+					} else if event.Op == fsnotify.Remove {
 						// file is deleted
 						op, err = exec.Command(c.String("exec")).CombinedOutput()
 						if err != nil {
 							log.Fatal(err)
 						}
-					} else if event.Op & fsnotify.Write == fsnotify.Rename {
+					} else if event.Op == fsnotify.Rename {
 						// file is renamed
 						op, err = exec.Command(c.String("exec")).CombinedOutput()
 						if err != nil {
