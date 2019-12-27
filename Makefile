@@ -1,5 +1,5 @@
 VERSION := $(shell git describe --tags)
-VERSION_WIDE := $(shell git describe)+$(shell date +'%_Y%m%_d')-$(shell git rev-parse --short=7 HEAD)
+VERSION_WIDE := $(shell git describe --tags)+$(shell date +'%_Y%m%_d')-$(shell git rev-parse --short=7 HEAD)
 GO_PATH := $(shell go env GOPATH)
 
 .PHONY: lint
