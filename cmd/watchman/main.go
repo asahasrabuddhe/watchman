@@ -5,10 +5,10 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/urfave/cli/v2"
 	"go.ajitem.com/watchman"
+	"log"
 	"os"
 	"os/exec"
-
-	"log"
+	"sync"
 )
 
 var Version string
@@ -60,17 +60,44 @@ func main() {
 		}()
 
 		go func() {
+			var mu sync.Mutex
 			for {
 				select {
 				case event := <-watcher.Events:
+					mu.Lock()
 					log.Printf("EVENT %#v", event)
 
-					op, err := exec.Command(c.String("exec")).CombinedOutput()
-					if err != nil {
-						log.Fatal(err)
+					var op []byte
+					var err error
+
+					if event.Op & fsnotify.Create == fsnotify.Create {
+						// new file created
+						op, err = exec.Command(c.String("exec")).CombinedOutput()
+						if err != nil {
+							log.Fatal(err)
+						}
+					} else if event.Op & fsnotify.Write == fsnotify.Write {
+						// file is saved
+						op, err = exec.Command(c.String("exec")).CombinedOutput()
+						if err != nil {
+							log.Fatal(err)
+						}
+					} else if event.Op & fsnotify.Write == fsnotify.Remove {
+						// file is deleted
+						op, err = exec.Command(c.String("exec")).CombinedOutput()
+						if err != nil {
+							log.Fatal(err)
+						}
+					} else if event.Op & fsnotify.Write == fsnotify.Rename {
+						// file is renamed
+						op, err = exec.Command(c.String("exec")).CombinedOutput()
+						if err != nil {
+							log.Fatal(err)
+						}
 					}
 
 					fmt.Println(string(op))
+					mu.Unlock()
 				case err := <-watcher.Errors:
 					fmt.Println("ERROR", err)
 				}
