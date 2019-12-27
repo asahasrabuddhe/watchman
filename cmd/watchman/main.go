@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"sync"
 )
 
 var Version string
@@ -60,11 +59,9 @@ func main() {
 		}()
 
 		go func() {
-			var mu sync.Mutex
 			for {
 				select {
 				case event := <-watcher.Events:
-					mu.Lock()
 					log.Printf("EVENT %#v", event)
 
 					var op []byte
@@ -97,7 +94,6 @@ func main() {
 					}
 
 					fmt.Println(string(op))
-					mu.Unlock()
 				case err := <-watcher.Errors:
 					fmt.Println("ERROR", err)
 				}
